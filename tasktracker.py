@@ -2,15 +2,24 @@ from datetime import datetime
 import json
 import itertools
 import shlex
-import os
+import random
 
+# global ID set
+existing_ids = set()
 class Task:
     id_iter = itertools.count(start=1)
     date_time = datetime.now()
     format = '%d-%m-%Y %H:%M'
     
+    def gen_unique_id():
+        while True:
+            unique_id = random.randint(1, 99)
+            if unique_id not in existing_ids:
+                existing_ids.add(unique_id)
+                return unique_id
+    
     def __init__(self, description, status="NEW"):
-        self.id = next(self.id_iter)
+        self.id = Task.gen_unique_id()
         self.description = description
         self.status = status
         self.createdAt = self.date_time.strftime(self.format)
@@ -81,6 +90,7 @@ def mark_task(status, id):
     for task in tasks:
         if task["id"] == field_key:
             task["status"] = status
+            task["createdAt"] = datetime.now().strftime(Task.format)
             task_found = True
             break
     
@@ -107,8 +117,7 @@ def list_tasks(option):
         tasks = [task for task in tasks if task["status"] == "NEW"]
     else:
         tasks = [task for task in tasks]
-
-    # Print the filtered tasks
+    
     if tasks:
         print(json.dumps(tasks, indent=2))
     else:
@@ -136,6 +145,7 @@ while(True):
         task_description = " ".join(task)
         list_tasks(task_description)
     elif(command in ['Exit', 'exit', 'Quit', 'quit', 'q']):
-        os.remove("task_list.json")
         exit(1)
+    else:
+        print(f'INCORRECT INPUT. TRY AGAIN')
         
