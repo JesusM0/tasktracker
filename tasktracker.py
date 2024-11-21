@@ -2,6 +2,9 @@ from datetime import datetime
 import json
 import itertools
 import shlex
+import os
+
+cur_id = 0
 
 class Task:
     id_iter = itertools.count(start=1)
@@ -34,15 +37,19 @@ def update_task(id, update):
         tasks = json.load(f)
 
     field_key = int(id)
-    
+    task_found = False
+
     for task in tasks:
         if task["id"] == field_key:
             task["description"] = update
             task["updatedAt"] = datetime.now().strftime(Task.format)
+            task_found = True
             break
-        else:
-            print(f'Task with ID {task_id} does not exist.')
-            return
+    
+    if not task_found:
+        print(f'Task with ID {id} does not exist.')
+        return
+    
     with open("task_list.json", "w") as f:
         json.dump(tasks, f, indent=4)
 
@@ -62,6 +69,29 @@ def delete_task(id):
     with open("task_list.json", "w") as f:
         json.dump(new_data, f, indent=4)
             
+def mark_task(status, id):
+    if status == 'mark-in-progress':
+        status = 'in-progress'
+    elif status == 'mark-done':
+        status = 'done'
+    with open('task_list.json', 'r') as f:
+        tasks = json.load(f)
+    
+    field_key = int(id)
+    task_found = False
+
+    for task in tasks:
+        if task["id"] == field_key:
+            task["status"] = status
+            task_found = True
+            break
+    
+    if not task_found:
+        print(f'Task with ID {id} does not exist.')
+        return
+    
+    with open("task_list.json", "w") as f:
+        json.dump(tasks, f, indent=4)
 
 while(True):
     user_input = input()
@@ -78,6 +108,10 @@ while(True):
     elif(command == 'delete'):
         task_description = " ".join(task)
         delete_task(task_description)
+    elif(command in ['mark-in-progress', 'mark-done']):
+        task_description = " ".join(task)
+        mark_task(command, task_description)
     elif(command in ['Exit', 'exit', 'Quit', 'quit', 'q']):
+        os.remove("task_list.json")
         exit(1)
         
