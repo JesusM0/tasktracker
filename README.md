@@ -18,8 +18,8 @@ In order for application to work, you must first install the pacakge. Use:
 * To update, use update #id, "new description"
 * To delete, use delete #id
 * To mark status, use mark-in-progress or mark-done followed by ID
-* To use List, simple type list and choose status(in-progress, done, NEW) or leave blank to display all
-You may want to open the json file once created to see ID's
+* To use List, simple type list and choose status(in-progress, done, NEW) or leave blank to display all <br>
+****NOTE: You may want to open the json file once created to see ID's
 
 ## Credits
 Created by Jesus Molina
