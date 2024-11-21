@@ -1,6 +1,7 @@
 from datetime import datetime
 import json
 import itertools
+import shlex
 
 class Task:
     id_iter = itertools.count(start=1)
@@ -17,19 +18,66 @@ class Task:
 
 def create_task(task):
     task_string = task.strip('"')
-    new_task = Task(task_string)
-    json_object = json.dumps(new_task.__dict__, indent=4)
+    new_task = Task(task_string).__dict__
+    try:
+        with open("task_list.json", "r") as infile:
+            tasks = json.load(infile)
+    except (FileNotFoundError, json.JSONDecodeError):
+        tasks = []
+    tasks.append(new_task)
     
     with open("task_list.json", "w") as outfile:
-        outfile.write(json_object)
+        json.dump(tasks,outfile, indent=4)
+
+def update_task(id, update):
+    with open('task_list.json', 'r') as f:
+        tasks = json.load(f)
+
+    field_key = int(id)
+    
+    for task in tasks:
+        if task["id"] == field_key:
+            task["description"] = update
+            task["updatedAt"] = datetime.now().strftime(Task.format)
+            break
+        else:
+            print(f'Task with ID {task_id} does not exist.')
+            return
+    with open("task_list.json", "w") as f:
+        json.dump(tasks, f, indent=4)
+
+def delete_task(id):
+    new_data = []
+    with open('task_list.json', 'r') as f:
+        tasks = json.load(f)
+    
+    field_key = int(id)
+    
+    for task in tasks:
+        if task['id'] == field_key:
+            pass
+        else:
+            new_data.append(task)
+    
+    with open("task_list.json", "w") as f:
+        json.dump(new_data, f, indent=4)
+            
 
 while(True):
     user_input = input()
     command, *task = user_input.split()
-    task_description = " ".join(task)
     
     if(command == 'add'):
+        task_description = " ".join(task)
         create_task(task_description)
+    elif(command == 'update'):
+        task_description = " ".join(task)
+        parsed = shlex.split(task_description)
+        task_id, task_update = parsed
+        update_task(task_id, task_update)
+    elif(command == 'delete'):
+        task_description = " ".join(task)
+        delete_task(task_description)
     elif(command in ['Exit', 'exit', 'Quit', 'quit', 'q']):
         exit(1)
         
