@@ -4,8 +4,6 @@ import itertools
 import shlex
 import os
 
-cur_id = 0
-
 class Task:
     id_iter = itertools.count(start=1)
     date_time = datetime.now()
@@ -92,6 +90,29 @@ def mark_task(status, id):
     
     with open("task_list.json", "w") as f:
         json.dump(tasks, f, indent=4)
+        
+def list_tasks(option):
+    try:
+        with open('task_list.json', 'r') as f:
+            tasks = json.load(f)
+    except (FileNotFoundError, json.JSONDecodeError):
+        print("No tasks found.")
+        return
+    
+    if option == "in-progress":
+        tasks = [task for task in tasks if task["status"] == "in-progress"]
+    elif option == "done":
+        tasks = [task for task in tasks if task["status"] == "done"]
+    elif option == "NEW":
+        tasks = [task for task in tasks if task["status"] == "NEW"]
+    else:
+        tasks = [task for task in tasks]
+
+    # Print the filtered tasks
+    if tasks:
+        print(json.dumps(tasks, indent=2))
+    else:
+        print(f"No tasks with status '{option}'.")
 
 while(True):
     user_input = input()
@@ -111,6 +132,9 @@ while(True):
     elif(command in ['mark-in-progress', 'mark-done']):
         task_description = " ".join(task)
         mark_task(command, task_description)
+    elif(command == 'list'):
+        task_description = " ".join(task)
+        list_tasks(task_description)
     elif(command in ['Exit', 'exit', 'Quit', 'quit', 'q']):
         os.remove("task_list.json")
         exit(1)
