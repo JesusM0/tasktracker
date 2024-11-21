@@ -6,11 +6,10 @@ This Program allows users to add, update, and delete tasks. The purpose of this 
 
 ## **Table of Contents**
 * [Description](#Description)
-* [Installation](#Installation)
-* [Usage](#Usage)
+* [Installation&Usage](#Installation)
 * [License](#License)
 
-## Installation 
+## Installation and Usage
 In order for application to work, you must first install the pacakge. Use:
 * In the Terminal, head to director where file is saved.
 * Use command python3 tasktracker.py to run
